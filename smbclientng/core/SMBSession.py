@@ -20,19 +20,29 @@ from impacket.dcerpc.v5 import rpcrt, srvs, transport
 from impacket.ldap import ldaptypes
 from impacket.nt_errors import STATUS_OBJECT_NAME_COLLISION
 from impacket.smb import SMBFileStreamInformation
-from impacket.smb3structs import (DACL_SECURITY_INFORMATION,
-                                  FILE_DIRECTORY_FILE, FILE_NON_DIRECTORY_FILE,
-                                  FILE_OPEN, FILE_READ_ATTRIBUTES,
-                                  GROUP_SECURITY_INFORMATION,
-                                  OWNER_SECURITY_INFORMATION, READ_CONTROL,
-                                  SMB2_0_INFO_FILE, SMB2_FILE_STREAM_INFO)
+from impacket.smb3structs import (
+    DACL_SECURITY_INFORMATION,
+    FILE_DIRECTORY_FILE,
+    FILE_NON_DIRECTORY_FILE,
+    FILE_OPEN,
+    FILE_READ_ATTRIBUTES,
+    GROUP_SECURITY_INFORMATION,
+    OWNER_SECURITY_INFORMATION,
+    READ_CONTROL,
+    SMB2_0_INFO_FILE,
+    SMB2_FILE_STREAM_INFO,
+)
 from impacket.smbconnection import SessionError, SMBConnection
 
 from smbclientng.core.LocalFileIO import LocalFileIO
 from smbclientng.core.SIDResolver import SIDResolver
 from smbclientng.utils.paths import normalize_alternate_data_stream_path
-from smbclientng.utils.utils import (STYPE_MASK, filesize, is_port_open,
-                                     smb_entry_iterator)
+from smbclientng.utils.utils import (
+    STYPE_MASK,
+    filesize,
+    is_port_open,
+    smb_entry_iterator,
+)
 
 if TYPE_CHECKING:
     from impacket.smb import SharedFile
@@ -203,7 +213,9 @@ class SMBSession(object):
             if self.credentials.ccacheFile:
                 original_krb5ccname = os.environ.get("KRB5CCNAME")
                 os.environ["KRB5CCNAME"] = self.credentials.ccacheFile
-                self.logger.debug(f"  | Using CCache file: {self.credentials.ccacheFile}")
+                self.logger.debug(
+                    f"  | Using CCache file: {self.credentials.ccacheFile}"
+                )
             try:
                 # When using CCache file, don't pass password/hashes to avoid TGT request
                 # Let impacket use the tickets from the CCache file directly
@@ -1928,7 +1940,9 @@ class SMBSession(object):
                 except SessionError as err:
                     if self.config.debug:
                         traceback.print_exc()
-                    self.logger.error("Could not access share '%s': %s" % (shareName, err))
+                    self.logger.error(
+                        "Could not access share '%s': %s" % (shareName, err)
+                    )
                     self.smb_share = None
                     self.smb_cwd = ""
             else:
@@ -1974,9 +1988,4 @@ class SMBSession(object):
             if path in ["", ".", ".."]:
                 self.smb_cwd = ""
             else:
-                if self.path_isdir(pathFromRoot=path.strip(ntpath.sep)):
-                    # Path exists on the remote
-                    self.smb_cwd = ntpath.normpath(path)
-                else:
-                    # Path does not exists or is not a directory on the remote
-                    self.logger.error("Remote directory '%s' does not exist." % path)
+                self.smb_cwd = ntpath.normpath(path)
